@@ -4579,7 +4579,7 @@ body {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .project-four .project-info {
@@ -4630,7 +4630,7 @@ body {
     }
 
     .project-four .project-heading h3 {
-        font-size: clamp(38px, 11vw, 64px);
+        font-size: clamp(29px, 2.1vw, 45px);
         line-height: 0.95;
     }
 
@@ -4654,6 +4654,19 @@ body {
 .project-four .project-heading h3 {
     font-size: clamp(42px, 4.5vw, 72px);
     letter-spacing: -0.045em;
+}
+
+@media (max-width: 768px) {
+    .project-four .project-info {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .project-four .project-heading h3 {
+        width: 100%;
+        max-width: 100%;
+        font-size: clamp(40px, 11vw, 64px);
+    }
 }
 
 /* =========================================
