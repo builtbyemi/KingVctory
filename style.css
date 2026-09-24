@@ -4572,14 +4572,14 @@ body {
 }
 
 /* =========================================
-   PROJECT 4 — FIX TEXT CLIPPING
+   PROJECT 4 — FINAL CLEAN FIX
 ========================================= */
 
 .project-four {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .project-four .project-info {
@@ -4588,24 +4588,36 @@ body {
     box-sizing: border-box;
 
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    gap: 60px;
-
-    padding-left: 10px;
-    padding-right: 10px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 50px;
 }
 
 .project-four .project-heading,
 .project-four .project-story {
     min-width: 0;
     max-width: 100%;
+    width: 100%;
     box-sizing: border-box;
 }
 
 .project-four .project-heading h3 {
+    width: 100%;
     max-width: 100%;
-    overflow-wrap: break-word;
+
+    margin: 0;
+
+    font-size: clamp(42px, 4vw, 68px);
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+
+    white-space: normal;
+    overflow-wrap: normal;
     word-break: normal;
+}
+
+.project-four .heading-word {
+    display: block;
+    white-space: normal;
 }
 
 .project-four .project-story {
@@ -4619,92 +4631,22 @@ body {
 }
 
 
-/* MOBILE */
+/* TABLET / MOBILE */
+
 @media (max-width: 768px) {
 
     .project-four .project-info {
         grid-template-columns: 1fr;
         gap: 40px;
-        padding-left: 5px;
-        padding-right: 5px;
     }
 
     .project-four .project-heading h3 {
-        font-size: clamp(29px, 2.1vw, 45px);
+        font-size: clamp(40px, 11vw, 64px);
         line-height: 0.95;
     }
 
-    .project-four .project-story {
-        width: 100%;
+    .project-four .heading-word {
+        display: block;
+        white-space: normal;
     }
-}
-
-/* FIX PROJECT 4 HEADING WORD BREAK */
-.project-four .project-heading h3 {
-    word-break: keep-all;
-    overflow-wrap: normal;
-    white-space: normal;
-}
-
-.project-four .project-heading {
-    min-width: 0;
-}
-
-/* Keep REPRESENTING together */
-.project-four .project-heading h3 {
-    font-size: clamp(42px, 4.5vw, 72px);
-    letter-spacing: -0.045em;
-}
-
-@media (max-width: 768px) {
-    .project-four .project-info {
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
-
-    .project-four .project-heading h3 {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(40px, 11vw, 64px);
-    }
-}
-
-/* =========================================
-   KING VCTORY — SCROLL REVEAL
-========================================= */
-
-.character-wrap {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    perspective: 1200px;
-    transform-style: preserve-3d;
-}
-
-.character {
-    transform-style: preserve-3d;
-    will-change: transform;
-    transition: filter 0.3s ease;
-}
-
-/* subtle glow while rotating */
-.character-wrap::after {
-    content: "";
-    position: absolute;
-    width: 55%;
-    height: 55%;
-    border-radius: 50%;
-    background: rgba(22, 135, 255, 0.16);
-    filter: blur(70px);
-    z-index: -1;
-    pointer-events: none;
-}
-
-.project-four .heading-word {
-    display: block;
-    white-space: nowrap;
 }
