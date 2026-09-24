@@ -180,30 +180,32 @@ projectCards.forEach((card) => {
 });
 
 /* =========================================================
-   CINEMATIC INTRO CONTROLLER
+   INTRO
 ========================================================= */
 
 const introScreen = document.getElementById("intro-screen");
 
 if (introScreen) {
 
-    const hasSeenIntro = sessionStorage.getItem("kingVictoryIntro");
+    const seen = sessionStorage.getItem("kingVictoryIntro");
 
-    if (hasSeenIntro) {
+    if (seen) {
 
         introScreen.remove();
 
     } else {
 
-        document.body.style.overflow = "hidden";
-
         sessionStorage.setItem("kingVictoryIntro", "true");
 
+        document.body.style.overflow = "hidden";
+
+        /* Start exit */
+
         setTimeout(() => {
-
             introScreen.classList.add("exiting");
+        }, 1450);
 
-        }, 1550);
+        /* Reveal website */
 
         setTimeout(() => {
 
@@ -211,10 +213,12 @@ if (introScreen) {
 
             document.body.style.overflow = "";
 
-            setTimeout(() => {
-                introScreen.remove();
-            }, 850);
+        }, 1950);
 
-        }, 2150);
+        /* Remove intro completely */
+
+        setTimeout(() => {
+            introScreen.remove();
+        }, 2550);
     }
 }
