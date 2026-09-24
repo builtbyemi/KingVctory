@@ -222,3 +222,49 @@ if (introScreen) {
         }, 2550);
     }
 }
+
+/* =========================================
+   KING VCTORY — SCROLL ROTATION
+========================================= */
+
+const characterWrap = document.querySelector(".character-wrap");
+
+if (character && characterWrap) {
+
+    let currentRotation = 0;
+    let targetRotation = 0;
+
+    function updateCharacterRotation() {
+
+        const rect = characterWrap.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+
+        // How far the character is through the viewport
+        const progress =
+            (viewportHeight - rect.top) /
+            (viewportHeight + rect.height);
+
+        // Clamp between 0 and 1
+        const p = Math.max(0, Math.min(1, progress));
+
+        // Smooth rotation
+        targetRotation = p * 360;
+
+        // Face-forward moment
+        const scale = 1 + Math.sin(p * Math.PI) * 0.06;
+
+        currentRotation +=
+            (targetRotation - currentRotation) * 0.08;
+
+        character.style.transform = `
+            perspective(1200px)
+            rotateY(${currentRotation}deg)
+            rotateX(${Math.sin(p * Math.PI) * 4}deg)
+            scale(${scale})
+        `;
+
+        requestAnimationFrame(updateCharacterRotation);
+    }
+
+    updateCharacterRotation();
+}
