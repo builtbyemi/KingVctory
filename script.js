@@ -1,270 +1,96 @@
+'use strict';
 
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+const motionToggle = document.querySelector('#motion-toggle');
+let motionOff = reducedMotion.matches;
+let explicitPreference = false;
 
-const character = document.querySelector(".character");
-
-const heroVisual = document.querySelector(".hero-visual");
-
-
-// =========================================
-// MOUSE PARALLAX
-// =========================================
-
-heroVisual.addEventListener("mousemove", (event) => {
-
-    const rect = heroVisual.getBoundingClientRect();
-
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = (y - centerY) / 35;
-    const rotateY = (centerX - x) / 35;
-
-    character.style.transform = `
-        perspective(1000px)
-        rotateX(${rotateX}deg)
-        rotateY(${rotateY}deg)
-        scale(1.02)
-    `;
+function updateMotion() {
+  if (reducedMotion.matches) motionOff = true;
+  motionToggle.hidden = false;
+  motionToggle.disabled = reducedMotion.matches;
+  document.documentElement.classList.toggle('motion-off', motionOff);
+  motionToggle.textContent = reducedMotion.matches ? 'Motion: reduced' : `Motion: ${motionOff ? 'off' : 'on'}`;
+  motionToggle.setAttribute('aria-pressed', String(motionOff));
+  motionToggle.setAttribute('aria-label', motionOff ? 'Enable motion effects' : 'Pause motion effects');
+  if (motionOff) document.querySelectorAll('.magnetic, .portrait').forEach(e => e.style.removeProperty('transform'));
+}
+motionToggle.addEventListener('click', () => {
+  explicitPreference = true;
+  motionOff = !motionOff;
+  updateMotion();
 });
-
-
-heroVisual.addEventListener("mouseleave", () => {
-
-    character.style.transform = `
-        perspective(1000px)
-        rotateX(0deg)
-        rotateY(0deg)
-        scale(1)
-    `;
-
+reducedMotion.addEventListener('change', e => {
+  if (!explicitPreference) motionOff = e.matches;
+  updateMotion();
 });
+updateMotion();
 
-
-// =========================================
-// CURSOR GLOW
-// =========================================
-
-const cursorGlow = document.createElement("div");
-
-cursorGlow.className = "cursor-glow";
-
-document.body.appendChild(cursorGlow);
-
-
-document.addEventListener("mousemove", (event) => {
-
-    cursorGlow.style.left = `${event.clientX}px`;
-    cursorGlow.style.top = `${event.clientY}px`;
-
-});
-
-// =========================================
-// SCROLL REVEAL
-// =========================================
-
-const revealElements = document.querySelectorAll(".reveal");
-
-const revealObserver = new IntersectionObserver(
-    (entries) => {
-
-        entries.forEach((entry) => {
-
-            if (entry.isIntersecting) {
-
-                entry.target.classList.add("active");
-
-            } else {
-
-                entry.target.classList.remove("active");
-
-            }
-
-        });
-
-    },
-    {
-        threshold: 0.15
+// Progressive enhancement: all content is visible without JavaScript.
+if ('IntersectionObserver' in window && !reducedMotion.matches) {
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.remove('pending');
+    entry.target.classList.add('visible');
+    observer.unobserve(entry.target);
+  }), { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(e => {
+    if (e.getBoundingClientRect().top > innerHeight) {
+      e.classList.add('pending');
+      observer.observe(e);
     }
-);
-
-
-revealElements.forEach((element) => {
-
-    revealObserver.observe(element);
-
-});
-
-// =========================================
-// CONTACT PANEL
-// =========================================
-
-const contactOpen = document.getElementById("contact-open");
-const contactClose = document.getElementById("contact-close");
-const contactOverlay = document.getElementById("contact-overlay");
-
-contactOpen.addEventListener("click", () => {
-    contactOverlay.classList.add("active");
-    document.body.style.overflow = "hidden";
-});
-
-
-contactClose.addEventListener("click", () => {
-    contactOverlay.classList.remove("active");
-    document.body.style.overflow = "";
-});
-
-
-contactOverlay.addEventListener("click", (event) => {
-
-    if (event.target === contactOverlay) {
-
-        contactOverlay.classList.remove("active");
-        document.body.style.overflow = "";
-
-    }
-
-});
-
-
-document.addEventListener("keydown", (event) => {
-
-    if (event.key === "Escape") {
-
-        contactOverlay.classList.remove("active");
-        document.body.style.overflow = "";
-
-    }
-
-});
-
-// =========================================
-// PROJECT IMAGE PARALLAX
-// =========================================
-
-const projectCards = document.querySelectorAll(".project-card");
-
-projectCards.forEach((card) => {
-
-    const image = card.querySelector("img");
-
-    card.addEventListener("mousemove", (event) => {
-
-        const rect = card.getBoundingClientRect();
-
-        const x =
-            (event.clientX - rect.left) / rect.width - 0.5;
-
-        const y =
-            (event.clientY - rect.top) / rect.height - 0.5;
-
-        image.style.transform = `
-            scale(1.1)
-            translate(
-                ${x * -10}px,
-                ${y * -10}px
-            )
-        `;
-
-    });
-
-
-    card.addEventListener("mouseleave", () => {
-
-        image.style.transform = "scale(1.02)";
-
-    });
-
-});
-
-/* =========================================================
-   INTRO
-========================================================= */
-
-const introScreen = document.getElementById("intro-screen");
-
-if (introScreen) {
-
-    const seen = sessionStorage.getItem("kingVictoryIntro");
-
-    if (seen) {
-
-        introScreen.remove();
-
-    } else {
-
-        sessionStorage.setItem("kingVictoryIntro", "true");
-
-        document.body.style.overflow = "hidden";
-
-        /* Start exit */
-
-        setTimeout(() => {
-            introScreen.classList.add("exiting");
-        }, 1450);
-
-        /* Reveal website */
-
-        setTimeout(() => {
-
-            introScreen.classList.add("intro-hidden");
-
-            document.body.style.overflow = "";
-
-        }, 1950);
-
-        /* Remove intro completely */
-
-        setTimeout(() => {
-            introScreen.remove();
-        }, 2550);
-    }
+  });
 }
 
-/* =========================================
-   KING VCTORY — SCROLL ROTATION
-========================================= */
-
-const characterWrap = document.querySelector(".character-wrap");
-
-if (character && characterWrap) {
-
-    let currentRotation = 0;
-    let targetRotation = 0;
-
-    function updateCharacterRotation() {
-
-        const rect = characterWrap.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-
-        // How far the character is through the viewport
-        const progress =
-            (viewportHeight - rect.top) /
-            (viewportHeight + rect.height);
-
-        // Clamp between 0 and 1
-        const p = Math.max(0, Math.min(1, progress));
-
-        // Smooth rotation
-        targetRotation = p * 360;
-
-        // Face-forward moment
-        const scale = 1 + Math.sin(p * Math.PI) * 0.06;
-
-        currentRotation +=
-            (targetRotation - currentRotation) * 0.08;
-
-        character.style.transform = `
-            perspective(1200px)
-            rotateY(${currentRotation}deg)
-            rotateX(${Math.sin(p * Math.PI) * 4}deg)
-            scale(${scale})
-        `;
-
-        requestAnimationFrame(updateCharacterRotation);
-    }
-
-    updateCharacterRotation();
+// Pointer effects run only on interaction, rather than in a perpetual loop.
+function pointerEffect(element, target, transform) {
+  let frame = 0;
+  element.addEventListener('pointermove', event => {
+    if (motionOff || reducedMotion.matches || !finePointer.matches) return;
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      const r = element.getBoundingClientRect();
+      target.style.transform = transform((event.clientX-r.left)/r.width-.5, (event.clientY-r.top)/r.height-.5);
+    });
+  });
+  element.addEventListener('pointerleave', () => {
+    cancelAnimationFrame(frame);
+    target.style.removeProperty('transform');
+  });
 }
+pointerEffect(document.querySelector('.hero-art'), document.querySelector('.portrait'),
+  (x,y) => `rotate(7deg) rotateY(${x*12}deg) rotateX(${-y*10}deg)`);
+document.querySelectorAll('.magnetic').forEach(e =>
+  pointerEffect(e,e,(x,y) => `translate(${x*9}px, ${y*7}px)`));
+
+// Native dialog provides focus containment, Escape and focus restoration.
+const viewer = document.querySelector('#image-viewer');
+const viewerImage = viewer.querySelector('img');
+const caption = document.querySelector('#viewer-caption');
+if (typeof viewer.showModal === 'function') {
+  document.querySelectorAll('[data-viewer]').forEach(link => link.addEventListener('click', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    const description = link.querySelector('img')?.alt || link.textContent.replace(' ↗','').trim();
+    viewerImage.src = link.href;
+    viewerImage.alt = description;
+    caption.textContent = description;
+    viewer.showModal();
+    document.body.classList.add('modal-open');
+  }));
+  viewer.querySelector('.viewer-close').addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', event => {
+    if (event.target !== viewer) return;
+    const r = viewer.getBoundingClientRect();
+    if (event.clientX<r.left || event.clientX>r.right || event.clientY<r.top || event.clientY>r.bottom) viewer.close();
+  });
+  viewer.addEventListener('close', () => {
+    document.body.classList.remove('modal-open');
+    viewerImage.removeAttribute('src');
+  });
+  viewerImage.addEventListener('error', () => {
+    caption.textContent = 'This image could not load. Close the viewer and try the evidence link again.';
+  });
+}
+document.querySelector('#year').textContent = new Date().getFullYear();
